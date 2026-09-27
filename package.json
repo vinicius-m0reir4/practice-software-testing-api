@@ -1,0 +1,19 @@
+{
+  "name": "practice-software-testing-api",
+  "version": "1.0.0",
+  "description": "API testing portfolio project using Postman, JavaScript, Newman, GitHub and GitHub Actions.",
+  "private": true,
+  "scripts": {
+    "test:api": "newman run"
+  },
+  "keywords": [
+    "qa",
+    "quality-assurance",
+    "api-testing",
+    "postman",
+    "newman",
+    "software-testing"
+  ],
+  "author": "Vinicius",
+  "license": "MIT"
+}
