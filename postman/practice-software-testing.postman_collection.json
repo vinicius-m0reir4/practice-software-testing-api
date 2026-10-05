@@ -33,7 +33,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n  \"email\": \"customer3@practicesoftwaretesting.com\",\r\n  \"password\": \"pass123\"\r\n}",
+              "raw": "{\r\n    \"email\": \"{{login_email}}\",\r\n    \"password\": \"{{login_password}}\"\r\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -80,7 +80,7 @@
                   "bearer": [
                     {
                       "key": "token",
-                      "value": "{{authorization_secret}}",
+                      "value": "{{invalid_token}}",
                       "type": "string"
                     }
                   ]
@@ -328,7 +328,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n    \"first_name\": \"QA Updated\",\r\n    \"last_name\": \"Tester\",\r\n    \"email\": \"customer3@practicesoftwaretesting.com\",\r\n    \"password\": \"pass123\",\r\n    \"address\": {\r\n        \"street\": \"Test street 200\",\r\n        \"city\": \"London\",\r\n        \"country\": \"United Kingdom\"\r\n    }\r\n}",
+              "raw": "{\r\n    \"first_name\": \"QA Updated\",\r\n    \"last_name\": \"Tester\",\r\n    \"email\": \"{{login_email}}\",\r\n    \"password\": \"{{login_password}}\",\r\n    \"address\": {\r\n        \"street\": \"Test street 200\",\r\n        \"city\": \"London\",\r\n        \"country\": \"United Kingdom\"\r\n    }\r\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -1421,7 +1421,7 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "const response = pm.response.json();\r\n\r\npm.test(\"CART-002 - Status deve ser 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"CART-002 - Content-Type deve ser JSON\", function () {\r\n    pm.expect(pm.response.headers.get(\"Content-Type\"))\r\n        .to.include(\"application/json\");\r\n});\r\n\r\npm.test(\"CART-002 - Resposta deve ser um objeto\", function () {\r\n    pm.expect(response).to.be.an(\"object\");\r\n});\r\n\r\npm.test(\"CART-002 - Campo result deve existir\", function () {\r\n    pm.expect(response).to.have.property(\"result\");\r\n});\r\n\r\npm.test(\"CART-002 - result deve ser string\", function () {\r\n    pm.expect(response.result).to.be.a(\"string\");\r\n});"
+                  "const response = pm.response.json();\r\n\r\npm.test(\"INTEGRATION-004 - Status deve ser 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"INTEGRATION-004 - Content-Type deve ser JSON\", function () {\r\n    pm.expect(pm.response.headers.get(\"Content-Type\"))\r\n        .to.include(\"application/json\");\r\n});\r\n\r\npm.test(\"INTEGRATION-004 - Resposta deve ser um objeto\", function () {\r\n    pm.expect(response).to.be.an(\"object\");\r\n});\r\n\r\npm.test(\"INTEGRATION-004 - Campo result deve existir\", function () {\r\n    pm.expect(response).to.have.property(\"result\");\r\n});\r\n\r\npm.test(\"INTEGRATION-004 - result deve ser string\", function () {\r\n    pm.expect(response.result).to.be.a(\"string\");\r\n});"
                 ]
               }
             }
@@ -1464,7 +1464,7 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "const response = pm.response.json();\r\n\r\npm.test(\"CART-004 - Status deve ser 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"CART-004 - Content-Type deve ser JSON\", function () {\r\n    pm.expect(pm.response.headers.get(\"Content-Type\"))\r\n        .to.include(\"application/json\");\r\n});\r\n\r\npm.test(\"CART-004 - Resposta deve ser um objeto\", function () {\r\n    pm.expect(response).to.be.an(\"object\");\r\n});\r\n\r\npm.test(\"CART-004 - Campo result deve existir\", function () {\r\n    pm.expect(response).to.have.property(\"result\");\r\n});\r\n\r\npm.test(\"CART-004 - result deve ser string\", function () {\r\n    pm.expect(response.result).to.be.a(\"string\");\r\n});"
+                  "const response = pm.response.json();\r\n\r\npm.test(\"INTEGRATION-005 - Status deve ser 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"INTEGRATION-005 - Content-Type deve ser JSON\", function () {\r\n    pm.expect(pm.response.headers.get(\"Content-Type\"))\r\n        .to.include(\"application/json\");\r\n});\r\n\r\npm.test(\"INTEGRATION-005 - Resposta deve ser um objeto\", function () {\r\n    pm.expect(response).to.be.an(\"object\");\r\n});\r\n\r\npm.test(\"INTEGRATION-005 - Campo result deve existir\", function () {\r\n    pm.expect(response).to.have.property(\"result\");\r\n});\r\n\r\npm.test(\"INTEGRATION-005 - result deve ser string\", function () {\r\n    pm.expect(response.result).to.be.a(\"string\");\r\n});"
                 ]
               }
             }
