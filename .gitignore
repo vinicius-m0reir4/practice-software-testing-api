@@ -29,3 +29,8 @@ Thumbs.db
 # IDE
 .vscode/
 .idea/
+
+reports/*
+!reports/.gitkeep
+
+postman/practice-software-testing.postman_environment.json

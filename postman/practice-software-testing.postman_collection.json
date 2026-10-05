@@ -1,0 +1,1654 @@
+{
+  "info": {
+    "_postman_id": "d028f8a8-6559-417f-8c17-ddabd6c44077",
+    "name": "Practice Software Testing API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "39663054",
+    "_collection_link": "https://go.postman.co/collection/39663054-d028f8a8-6559-417f-8c17-ddabd6c44077?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "01 - Authentication",
+      "item": [
+        {
+          "name": "AUTH-001 - Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const response = pm.response.json();\r\n\r\npm.environment.set(\"token\", response.access_token);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"email\": \"customer3@practicesoftwaretesting.com\",\r\n  \"password\": \"pass123\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/users/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "02 - Users",
+      "item": [
+        {
+          "name": "Negative Tests",
+          "item": [
+            {
+              "name": "USER-002 - Get Current User - Invalid Token",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"USER-002 - Status deve ser 401\", function () {\r\n    pm.response.to.have.status(401);\r\n});"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{authorization_secret}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/users/me",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "users",
+                    "me"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "USER-007 - Update User - Invalid Data",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "const response = pm.response.json();\r\n\r\npm.test(\"USER-007 - Content-Type deve ser JSON\", function () {\r\n    pm.expect(pm.response.headers.get(\"Content-Type\"))\r\n        .to.include(\"application/json\");\r\n});\r\n\r\npm.test(\"USER-007 - Resposta deve ser um objeto\", function () {\r\n    pm.expect(response).to.be.an(\"object\");\r\n    pm.expect(response).to.not.be.an(\"array\");\r\n});"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"first_name\": \"\",\r\n    \"last_name\": \"\",\r\n    \"email\": \"email-invalido\",\r\n    \"password\": \"123\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/users/{{user_id}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "users",
+                    "{{user_id}}"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "USER-001 - Get Current User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const response = pm.response.json();\r\n\r\npm.environment.set(\"user_id\", response.id);\r\n\r\npm.test(\"USER-001 - Status deve ser 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"USER-001 - Content-Type deve ser JSON\", function () {\r\n    pm.expect(pm.response.headers.get(\"Content-Type\"))\r\n        .to.include(\"application/json\");\r\n});\r\n\r\npm.test(\"USER-001 - Resposta deve ser um objeto\", function () {\r\n    pm.expect(response).to.be.an(\"object\");\r\n    pm.expect(response).to.not.be.an(\"array\");\r\n});\r\n\r\npm.test(\"USER-001 - ID do usuário deve existir\", function () {\r\n    pm.expect(response).to.have.property(\"id\");\r\n    pm.expect(response.id).to.be.a(\"string\");\r\n});\r\n\r\npm.test(\"USER-001 - Dados básicos do usuário devem existir\", function () {\r\n    pm.expect(response).to.have.property(\"first_name\");\r\n    pm.expect(response.first_name).to.be.a(\"string\");\r\n\r\n    pm.expect(response).to.have.property(\"last_name\");\r\n    pm.expect(response.last_name).to.be.a(\"string\");\r\n\r\n    pm.expect(response).to.have.property(\"email\");\r\n    pm.expect(response.email).to.be.a(\"string\");\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/users/me",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "me"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "USER-003 - Register User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const response = pm.response.json();\r\n\r\npm.test(\"USER-003 - Status deve ser 201\", function () {\r\n    pm.response.to.have.status(201);\r\n});\r\n\r\npm.test(\"USER-003 - Content-Type deve ser JSON\", function () {\r\n    pm.expect(pm.response.headers.get(\"Content-Type\"))\r\n        .to.include(\"application/json\");\r\n});\r\n\r\npm.test(\"USER-003 - Resposta deve ser um objeto\", function () {\r\n    pm.expect(response).to.be.an(\"object\");\r\n    pm.expect(response).to.not.be.an(\"array\");\r\n});\r\n\r\npm.test(\"USER-003 - ID do usuário criado deve existir\", function () {\r\n    pm.expect(response).to.have.property(\"id\");\r\n    pm.expect(response.id).to.be.a(\"string\");\r\n});\r\n\r\npm.test(\"USER-003 - E-mail retornado deve corresponder ao utilizado\", function () {\r\n    pm.expect(response).to.have.property(\"email\");\r\n    pm.expect(response.email).to.eql(\r\n        pm.environment.get(\"test_email\")\r\n    );\r\n});\r\n\r\npm.environment.set(\"registered_user_id\", response.id);"
+                ]
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const timestamp = Date.now();\r\n\r\npm.environment.set(\r\n    \"test_email\",\r\n    `qa.api.${timestamp}@example.com`\r\n);\r\n\r\npm.environment.set(\r\n    \"test_password\",\r\n    \"QaTest@1234\"\r\n);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"first_name\": \"QA\",\r\n    \"last_name\": \"Tester\",\r\n    \"email\": \"{{test_email}}\",\r\n    \"password\": \"{{test_password}}\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/users/register",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "register"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "USER-004 - Get Registered User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const response = pm.response.json();\r\n\r\npm.test(\"USER-004 - Status deve ser 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"USER-004 - Content-Type deve ser JSON\", function () {\r\n    pm.expect(pm.response.headers.get(\"Content-Type\"))\r\n        .to.include(\"application/json\");\r\n});\r\n\r\npm.test(\"USER-004 - Resposta deve ser um objeto\", function () {\r\n    pm.expect(response).to.be.an(\"object\");\r\n    pm.expect(response).to.not.be.an(\"array\");\r\n});\r\n\r\npm.test(\"USER-004 - ID do usuário deve existir\", function () {\r\n    pm.expect(response).to.have.property(\"id\");\r\n    pm.expect(response.id).to.be.a(\"string\");\r\n});\r\n\r\npm.test(\"USER-004 - E-mail deve existir\", function () {\r\n    pm.expect(response).to.have.property(\"email\");\r\n    pm.expect(response.email).to.be.a(\"string\");\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/users/me",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "me"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "USER-005 - Update User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const response = pm.response.json();\r\n\r\npm.test(\"USER-005 - Status deve ser 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"USER-005 - Content-Type deve ser JSON\", function () {\r\n    pm.expect(pm.response.headers.get(\"Content-Type\"))\r\n        .to.include(\"application/json\");\r\n});\r\n\r\npm.test(\"USER-005 - Resposta deve ser um objeto\", function () {\r\n    pm.expect(response).to.be.an(\"object\");\r\n    pm.expect(response).to.not.be.an(\"array\");\r\n});\r\n\r\npm.test(\"USER-005 - Campo success deve existir\", function () {\r\n    pm.expect(response).to.have.property(\"success\");\r\n});\r\n\r\npm.test(\"USER-005 - Campo success deve ser boolean\", function () {\r\n    pm.expect(response.success).to.be.a(\"boolean\");\r\n});\r\n\r\npm.test(\"USER-005 - Atualização deve ser confirmada\", function () {\r\n    pm.expect(response.success).to.eql(true);\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"first_name\": \"QA Updated\",\r\n    \"last_name\": \"Tester\",\r\n    \"email\": \"customer3@practicesoftwaretesting.com\",\r\n    \"password\": \"pass123\",\r\n    \"address\": {\r\n        \"street\": \"Test street 200\",\r\n        \"city\": \"London\",\r\n        \"country\": \"United Kingdom\"\r\n    }\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/users/{{user_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "{{user_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "USER-006 - Verify User Update",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const response = pm.response.json();\r\n\r\npm.test(\"USER-006 - Status deve ser 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"USER-006 - Content-Type deve ser JSON\", function () {\r\n    pm.expect(pm.response.headers.get(\"Content-Type\"))\r\n        .to.include(\"application/json\");\r\n});\r\n\r\npm.test(\"USER-006 - Resposta deve ser um objeto\", function () {\r\n    pm.expect(response).to.be.an(\"object\");\r\n    pm.expect(response).to.not.be.an(\"array\");\r\n});\r\n\r\npm.test(\"USER-006 - ID deve ser string\", function () {\r\n    pm.expect(response).to.have.property(\"id\");\r\n    pm.expect(response.id).to.be.a(\"string\");\r\n});\r\n\r\npm.test(\"USER-006 - first_name deve ser string\", function () {\r\n    pm.expect(response).to.have.property(\"first_name\");\r\n    pm.expect(response.first_name).to.be.a(\"string\");\r\n});\r\n\r\npm.test(\"USER-006 - last_name deve ser string\", function () {\r\n    pm.expect(response).to.have.property(\"last_name\");\r\n    pm.expect(response.last_name).to.be.a(\"string\");\r\n});\r\n\r\npm.test(\"USER-006 - email deve ser string\", function () {\r\n    pm.expect(response).to.have.property(\"email\");\r\n    pm.expect(response.email).to.be.a(\"string\");\r\n});\r\n\r\npm.test(\"USER-006 - address deve ser objeto\", function () {\r\n    pm.expect(response).to.have.property(\"address\");\r\n    pm.expect(response.address).to.be.an(\"object\");\r\n});\r\n\r\npm.test(\"USER-006 - address.street deve ser string\", function () {\r\n    pm.expect(response.address).to.have.property(\"street\");\r\n    pm.expect(response.address.street).to.be.a(\"string\");\r\n});\r\n\r\npm.test(\"USER-006 - address.city deve ser string\", function () {\r\n    pm.expect(response.address).to.have.property(\"city\");\r\n    pm.expect(response.address.city).to.be.a(\"string\");\r\n});\r\n\r\npm.test(\"USER-006 - address.country deve ser string\", function () {\r\n    pm.expect(response.address).to.have.property(\"country\");\r\n    pm.expect(response.address.country).to.be.a(\"string\");\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/users/{{user_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "{{user_id}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "03 - Products",
+      "item": [
+        {
+          "name": "PRODUCT-001 - Get Products",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const response = pm.response.json();\r\n\r\npm.test(\"PRODUCT-001 - Status deve ser 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"PRODUCT-001 - Content-Type deve ser JSON\", function () {\r\n    pm.expect(pm.response.headers.get(\"Content-Type\"))\r\n        .to.include(\"application/json\");\r\n});\r\n\r\npm.test(\"PRODUCT-001 - Resposta deve ser um objeto\", function () {\r\n    pm.expect(response).to.be.an(\"object\");\r\n    pm.expect(response).to.not.be.an(\"array\");\r\n});\r\n\r\npm.test(\"PRODUCT-001 - Campo data deve existir\", function () {\r\n    pm.expect(response).to.have.property(\"data\");\r\n});\r\n\r\npm.test(\"PRODUCT-001 - Campo data deve ser um array\", function () {\r\n    pm.expect(response.data).to.be.an(\"array\");\r\n});\r\n\r\npm.test(\"PRODUCT-001 - Deve existir pelo menos um produto\", function () {\r\n    pm.expect(response.data.length).to.be.greaterThan(0);\r\n});\r\n\r\npm.test(\"PRODUCT-001 - Primeiro produto deve possuir ID\", function () {\r\n    pm.expect(response.data[0]).to.have.property(\"id\");\r\n    pm.expect(response.data[0].id).to.be.a(\"string\");\r\n});\r\n\r\npm.test(\"PRODUCT-001 - Primeiro produto deve possuir nome\", function () {\r\n    pm.expect(response.data[0]).to.have.property(\"name\");\r\n    pm.expect(response.data[0].name).to.be.a(\"string\");\r\n});\r\n\r\npm.test(\"PRODUCT-001 - Preço deve ser numérico\", function () {\r\n    pm.expect(response.data[0]).to.have.property(\"price\");\r\n    pm.expect(response.data[0].price).to.be.a(\"number\");\r\n});\r\n\r\npm.test(\"PRODUCT-001 - Campo total deve existir\", function () {\r\n    pm.expect(response).to.have.property(\"total\");\r\n    pm.expect(response.total).to.be.a(\"number\");\r\n});\r\n\r\npm.environment.set(\"product_id\", response.data[0].id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/products",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "products"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PRODUCT-002 - Get Product By ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const response = pm.response.json();\r\n\r\npm.test(\"PRODUCT-002 - Status deve ser 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"PRODUCT-002 - Content-Type deve ser JSON\", function () {\r\n    pm.expect(pm.response.headers.get(\"Content-Type\"))\r\n        .to.include(\"application/json\");\r\n});\r\n\r\npm.test(\"PRODUCT-002 - Resposta deve ser um objeto\", function () {\r\n    pm.expect(response).to.be.an(\"object\");\r\n    pm.expect(response).to.not.be.an(\"array\");\r\n});\r\n\r\npm.test(\"PRODUCT-002 - ID deve existir\", function () {\r\n    pm.expect(response).to.have.property(\"id\");\r\n    pm.expect(response.id).to.be.a(\"string\");\r\n});\r\n\r\npm.test(\"PRODUCT-002 - Nome deve existir\", function () {\r\n    pm.expect(response).to.have.property(\"name\");\r\n    pm.expect(response.name).to.be.a(\"string\");\r\n});\r\n\r\npm.test(\"PRODUCT-002 - Preço deve existir e ser numérico\", function () {\r\n    pm.expect(response).to.have.property(\"price\");\r\n    pm.expect(response.price).to.be.a(\"number\");\r\n});\r\n\r\npm.test(\"PRODUCT-002 - is_location_offer deve ser boolean\", function () {\r\n    pm.expect(response).to.have.property(\"is_location_offer\");\r\n    pm.expect(response.is_location_offer).to.be.a(\"boolean\");\r\n});\r\n\r\npm.test(\"PRODUCT-002 - is_rental deve ser boolean\", function () {\r\n    pm.expect(response).to.have.property(\"is_rental\");\r\n    pm.expect(response.is_rental).to.be.a(\"boolean\");\r\n});\r\n\r\npm.test(\"PRODUCT-002 - in_stock deve ser boolean\", function () {\r\n    pm.expect(response).to.have.property(\"in_stock\");\r\n    pm.expect(response.in_stock).to.be.a(\"boolean\");\r\n});\r\n\r\npm.test(\"PRODUCT-002 - category deve ser objeto\", function () {\r\n    pm.expect(response).to.have.property(\"category\");\r\n    pm.expect(response.category).to.be.an(\"object\");\r\n});\r\n\r\npm.test(\"PRODUCT-002 - brand deve ser objeto\", function () {\r\n    pm.expect(response).to.have.property(\"brand\");\r\n    pm.expect(response.brand).to.be.an(\"object\");\r\n});\r\n\r\npm.test(\"PRODUCT-002 - specs deve ser um array\", function () {\r\n    pm.expect(response).to.have.property(\"specs\");\r\n    pm.expect(response.specs).to.be.an(\"array\");\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/products/{{product_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "products",
+                "{{product_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PRODUCT-003 - Get Product By Invalid ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const response = pm.response.json();\r\n\r\npm.test(\"PRODUCT-003 - Status deve ser 404\", function () {\r\n    pm.response.to.have.status(404);\r\n});\r\n\r\npm.test(\"PRODUCT-003 - Content-Type deve ser JSON\", function () {\r\n    pm.expect(pm.response.headers.get(\"Content-Type\"))\r\n        .to.include(\"application/json\");\r\n});\r\n\r\npm.test(\"PRODUCT-003 - Resposta deve ser um objeto\", function () {\r\n    pm.expect(response).to.be.an(\"object\");\r\n    pm.expect(response).to.not.be.an(\"array\");\r\n});\r\n\r\npm.test(\"PRODUCT-003 - Campo message deve existir\", function () {\r\n    pm.expect(response).to.have.property(\"message\");\r\n});\r\n\r\npm.test(\"PRODUCT-003 - Campo message deve ser string\", function () {\r\n    pm.expect(response.message).to.be.a(\"string\");\r\n});\r\n\r\npm.test(\"PRODUCT-003 - Mensagem deve indicar que o produto não foi encontrado\", function () {\r\n    pm.expect(response.message).to.eql(\"Requested item not found\");\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/products/id-inexistente-qa",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "products",
+                "id-inexistente-qa"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PRODUCT-004 - Get Products - Pagination",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const response = pm.response.json();\r\n\r\npm.test(\"PRODUCT-004 - Status deve ser 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"PRODUCT-004 - Content-Type deve ser JSON\", function () {\r\n    pm.expect(pm.response.headers.get(\"Content-Type\"))\r\n        .to.include(\"application/json\");\r\n});\r\n\r\npm.test(\"PRODUCT-004 - Resposta deve ser um objeto\", function () {\r\n    pm.expect(response).to.be.an(\"object\");\r\n    pm.expect(response).to.not.be.an(\"array\");\r\n});\r\n\r\npm.test(\"PRODUCT-004 - current_page deve existir\", function () {\r\n    pm.expect(response).to.have.property(\"current_page\");\r\n});\r\n\r\npm.test(\"PRODUCT-004 - current_page deve ser 2\", function () {\r\n    pm.expect(response.current_page).to.eql(2);\r\n});\r\n\r\npm.test(\"PRODUCT-004 - data deve existir\", function () {\r\n    pm.expect(response).to.have.property(\"data\");\r\n});\r\n\r\npm.test(\"PRODUCT-004 - data deve ser um array\", function () {\r\n    pm.expect(response.data).to.be.an(\"array\");\r\n});\r\n\r\npm.test(\"PRODUCT-004 - Deve existir pelo menos um produto\", function () {\r\n    pm.expect(response.data.length).to.be.greaterThan(0);\r\n});\r\n\r\npm.test(\"PRODUCT-004 - total deve existir\", function () {\r\n    pm.expect(response).to.have.property(\"total\");\r\n});\r\n\r\npm.test(\"PRODUCT-004 - total deve ser numérico\", function () {\r\n    pm.expect(response.total).to.be.a(\"number\");\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/products?page=2",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "products"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "2"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PRODUCT-005 - Get Products - Sort By Name",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const response = pm.response.json();\r\n\r\npm.test(\"PRODUCT-005 - Status deve ser 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"PRODUCT-005 - Content-Type deve ser JSON\", function () {\r\n    pm.expect(pm.response.headers.get(\"Content-Type\"))\r\n        .to.include(\"application/json\");\r\n});\r\n\r\npm.test(\"PRODUCT-005 - Resposta deve ser um objeto\", function () {\r\n    pm.expect(response).to.be.an(\"object\");\r\n});\r\n\r\npm.test(\"PRODUCT-005 - Data deve existir\", function () {\r\n    pm.expect(response).to.have.property(\"data\");\r\n});\r\n\r\npm.test(\"PRODUCT-005 - Data deve ser um array\", function () {\r\n    pm.expect(response.data).to.be.an(\"array\");\r\n});\r\n\r\npm.test(\"PRODUCT-005 - Deve retornar produtos\", function () {\r\n    pm.expect(response.data.length).to.be.greaterThan(0);\r\n});\r\n\r\npm.test(\"PRODUCT-005 - Primeiro produto deve possuir nome\", function () {\r\n    pm.expect(response.data[0]).to.have.property(\"name\");\r\n    pm.expect(response.data[0].name).to.be.a(\"string\");\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/products?sort=name,asc",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "products"
+              ],
+              "query": [
+                {
+                  "key": "sort",
+                  "value": "name,asc"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PRODUCT-006 - Get Products - Price Filter",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const response = pm.response.json();\r\n\r\npm.test(\"PRODUCT-006 - Status deve ser 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"PRODUCT-006 - Content-Type deve ser JSON\", function () {\r\n    pm.expect(pm.response.headers.get(\"Content-Type\"))\r\n        .to.include(\"application/json\");\r\n});\r\n\r\npm.test(\"PRODUCT-006 - Resposta deve ser um objeto\", function () {\r\n    pm.expect(response).to.be.an(\"object\");\r\n});\r\n\r\npm.test(\"PRODUCT-006 - Data deve existir\", function () {\r\n    pm.expect(response).to.have.property(\"data\");\r\n});\r\n\r\npm.test(\"PRODUCT-006 - Data deve ser um array\", function () {\r\n    pm.expect(response.data).to.be.an(\"array\");\r\n});\r\n\r\npm.test(\"PRODUCT-006 - Deve retornar produtos\", function () {\r\n    pm.expect(response.data.length).to.be.greaterThan(0);\r\n});\r\n\r\npm.test(\"PRODUCT-006 - Produtos retornados devem possuir preço\", function () {\r\n    response.data.forEach(function (product) {\r\n        pm.expect(product).to.have.property(\"price\");\r\n        pm.expect(product.price).to.be.a(\"number\");\r\n    });\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/products?between=10,30",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "products"
+              ],
+              "query": [
+                {
+                  "key": "between",
+                  "value": "10,30"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PRODUCT-007 - Create Product",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const response = pm.response.json();\r\n\r\npm.test(\"PRODUCT-007 - Status real observado deve ser 201\", function () {\r\n    pm.response.to.have.status(201);\r\n});\r\n\r\npm.test(\"PRODUCT-007 - Content-Type deve ser JSON\", function () {\r\n    pm.expect(pm.response.headers.get(\"Content-Type\"))\r\n        .to.include(\"application/json\");\r\n});\r\n\r\npm.test(\"PRODUCT-007 - Resposta deve ser um objeto\", function () {\r\n    pm.expect(response).to.be.an(\"object\");\r\n    pm.expect(response).to.not.be.an(\"array\");\r\n});\r\n\r\npm.test(\"PRODUCT-007 - ID do produto deve existir\", function () {\r\n    pm.expect(response).to.have.property(\"id\");\r\n    pm.expect(response.id).to.be.a(\"string\");\r\n});\r\n\r\npm.test(\"PRODUCT-007 - Nome deve existir\", function () {\r\n    pm.expect(response.name).to.be.a(\"string\");\r\n});\r\n\r\npm.test(\"PRODUCT-007 - Preço deve ser numérico\", function () {\r\n    pm.expect(response.price).to.be.a(\"number\");\r\n});\r\n\r\npm.test(\"PRODUCT-007 - in_stock deve ser boolean\", function () {\r\n    pm.expect(response.in_stock).to.be.a(\"boolean\");\r\n});\r\n\r\npm.test(\"PRODUCT-007 - is_eco_friendly deve ser boolean\", function () {\r\n    pm.expect(response.is_eco_friendly).to.be.a(\"boolean\");\r\n});\r\n\r\npm.test(\"PRODUCT-007 - product_image deve ser objeto\", function () {\r\n    pm.expect(response.product_image).to.be.an(\"object\");\r\n});\r\n\r\npm.test(\"PRODUCT-007 - category deve ser objeto\", function () {\r\n    pm.expect(response.category).to.be.an(\"object\");\r\n});\r\n\r\npm.test(\"PRODUCT-007 - brand deve ser objeto\", function () {\r\n    pm.expect(response.brand).to.be.an(\"object\");\r\n});\r\n\r\npm.environment.set(\"product_id\", response.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"name\": \"QA Test Product\",\r\n    \"description\": \"Product created for API testing\",\r\n    \"price\": 25.50,\r\n    \"category_id\": \"{{category_id}}\",\r\n    \"brand_id\": \"{{brand_id}}\",\r\n    \"product_image_id\": \"{{product_image_id}}\",\r\n    \"is_location_offer\": false,\r\n    \"is_rental\": false,\r\n    \"co2_rating\": \"A\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/products",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "products"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PRODUCT-008 - Get Categories",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const response = pm.response.json();\r\n\r\npm.test(\"PRODUCT-008 - Status deve ser 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"PRODUCT-008 - Resposta deve ser um array\", function () {\r\n    pm.expect(response).to.be.an(\"array\");\r\n});\r\n\r\nconst category = response.find(function (item) {\r\n    return item.name === \"Pliers\";\r\n});\r\n\r\npm.test(\"PRODUCT-008 - Categoria Pliers deve existir\", function () {\r\n    pm.expect(category).to.not.be.undefined;\r\n});\r\n\r\npm.test(\"PRODUCT-008 - Categoria deve possuir ID\", function () {\r\n    pm.expect(category).to.have.property(\"id\");\r\n    pm.expect(category.id).to.be.a(\"string\");\r\n});\r\n\r\nif (category) {\r\n    pm.environment.set(\"category_id\", category.id);\r\n}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/categories",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "categories"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PRODUCT-009 - Get Brands",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const response = pm.response.json();\r\n\r\npm.test(\"PRODUCT-009 - Status deve ser 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"PRODUCT-009 - Resposta deve ser um array\", function () {\r\n    pm.expect(response).to.be.an(\"array\");\r\n});\r\n\r\nconst brand = response.find(function (item) {\r\n    return item.name === \"ForgeFlex Tools\";\r\n});\r\n\r\npm.test(\"PRODUCT-009 - Marca ForgeFlex Tools deve existir\", function () {\r\n    pm.expect(brand).to.not.be.undefined;\r\n});\r\n\r\npm.test(\"PRODUCT-009 - Marca deve possuir ID\", function () {\r\n    pm.expect(brand).to.have.property(\"id\");\r\n    pm.expect(brand.id).to.be.a(\"string\");\r\n});\r\n\r\nif (brand) {\r\n    pm.environment.set(\"brand_id\", brand.id);\r\n}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/brands",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "brands"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PRODUCT-010 - Get Product Images",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const response = pm.response.json();\r\n\r\npm.test(\"PRODUCT-010 - Status deve ser 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"PRODUCT-010 - Resposta deve ser um array\", function () {\r\n    pm.expect(response).to.be.an(\"array\");\r\n});\r\n\r\npm.test(\"PRODUCT-010 - Deve existir pelo menos uma imagem\", function () {\r\n    pm.expect(response.length).to.be.greaterThan(0);\r\n});\r\n\r\npm.test(\"PRODUCT-010 - Primeira imagem deve possuir ID\", function () {\r\n    pm.expect(response[0]).to.have.property(\"id\");\r\n    pm.expect(response[0].id).to.be.a(\"string\");\r\n});\r\n\r\nif (response.length > 0) {\r\n    pm.environment.set(\"product_image_id\", response[0].id);\r\n}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/images",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "images"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PRODUCT-011 - Get Created Product",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const response = pm.response.json();\r\n\r\npm.test(\"PRODUCT-011 - Status deve ser 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"PRODUCT-011 - Content-Type deve ser JSON\", function () {\r\n    pm.expect(pm.response.headers.get(\"Content-Type\"))\r\n        .to.include(\"application/json\");\r\n});\r\n\r\npm.test(\"PRODUCT-011 - Resposta deve ser um objeto\", function () {\r\n    pm.expect(response).to.be.an(\"object\");\r\n    pm.expect(response).to.not.be.an(\"array\");\r\n});\r\n\r\npm.test(\"PRODUCT-011 - ID deve corresponder ao produto criado\", function () {\r\n    pm.expect(response.id).to.eql(\r\n        pm.environment.get(\"product_id\")\r\n    );\r\n});\r\n\r\npm.test(\"PRODUCT-011 - Nome deve estar persistido\", function () {\r\n    pm.expect(response.name).to.eql(\"QA Test Product\");\r\n});\r\n\r\npm.test(\"PRODUCT-011 - Preço deve estar persistido\", function () {\r\n    pm.expect(response.price).to.eql(25.5);\r\n});\r\n\r\npm.test(\"PRODUCT-011 - Categoria deve existir\", function () {\r\n    pm.expect(response.category).to.be.an(\"object\");\r\n});\r\n\r\npm.test(\"PRODUCT-011 - Marca deve existir\", function () {\r\n    pm.expect(response.brand).to.be.an(\"object\");\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/products/{{product_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "products",
+                "{{product_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PRODUCT-012 - Update Product",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const response = pm.response.json();\r\n\r\npm.test(\"PRODUCT-012 - Status deve ser 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"PRODUCT-012 - Content-Type deve ser JSON\", function () {\r\n    pm.expect(pm.response.headers.get(\"Content-Type\"))\r\n        .to.include(\"application/json\");\r\n});\r\n\r\npm.test(\"PRODUCT-012 - Resposta deve ser um objeto\", function () {\r\n    pm.expect(response).to.be.an(\"object\");\r\n    pm.expect(response).to.not.be.an(\"array\");\r\n});\r\n\r\npm.test(\"PRODUCT-012 - Campo success deve existir\", function () {\r\n    pm.expect(response).to.have.property(\"success\");\r\n});\r\n\r\npm.test(\"PRODUCT-012 - Campo success deve ser boolean\", function () {\r\n    pm.expect(response.success).to.be.a(\"boolean\");\r\n});\r\n\r\npm.test(\"PRODUCT-012 - Atualização deve ser confirmada\", function () {\r\n    pm.expect(response.success).to.eql(true);\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"name\": \"QA Test Product Updated\",\r\n    \"description\": \"Product updated during API testing\",\r\n    \"price\": 30.5,\r\n    \"category_id\": \"{{category_id}}\",\r\n    \"brand_id\": \"{{brand_id}}\",\r\n    \"product_image_id\": \"{{product_image_id}}\",\r\n    \"is_location_offer\": false,\r\n    \"is_rental\": false,\r\n    \"co2_rating\": \"A\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/products/{{product_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "products",
+                "{{product_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PRODUCT-013 - Verify Product Update",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const response = pm.response.json();\r\n\r\npm.test(\"PRODUCT-013 - Status deve ser 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"PRODUCT-013 - Content-Type deve ser JSON\", function () {\r\n    pm.expect(pm.response.headers.get(\"Content-Type\"))\r\n        .to.include(\"application/json\");\r\n});\r\n\r\npm.test(\"PRODUCT-013 - Resposta deve ser um objeto\", function () {\r\n    pm.expect(response).to.be.an(\"object\");\r\n    pm.expect(response).to.not.be.an(\"array\");\r\n});\r\n\r\npm.test(\"PRODUCT-013 - ID deve corresponder ao produto\", function () {\r\n    pm.expect(response.id).to.eql(\r\n        pm.environment.get(\"product_id\")\r\n    );\r\n});\r\n\r\npm.test(\"PRODUCT-013 - Nome atualizado deve estar persistido\", function () {\r\n    pm.expect(response.name).to.eql(\"QA Test Product Updated\");\r\n});\r\n\r\npm.test(\"PRODUCT-013 - Descrição atualizada deve estar persistida\", function () {\r\n    pm.expect(response.description).to.eql(\r\n        \"Product updated during API testing\"\r\n    );\r\n});\r\n\r\npm.test(\"PRODUCT-013 - Preço atualizado deve estar persistido\", function () {\r\n    pm.expect(response.price).to.eql(30.5);\r\n});\r\n\r\npm.test(\"PRODUCT-013 - Categoria deve existir\", function () {\r\n    pm.expect(response.category).to.be.an(\"object\");\r\n});\r\n\r\npm.test(\"PRODUCT-013 - Marca deve existir\", function () {\r\n    pm.expect(response.brand).to.be.an(\"object\");\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/products/{{product_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "products",
+                "{{product_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PRODUCT-014 - Patch Product",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"price\": 35.5\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/products/{{product_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "products",
+                "{{product_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PRODUCT-015 - Verify Product Patch",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const response = pm.response.json();\r\n\r\npm.test(\"PRODUCT-015 - Status deve ser 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"PRODUCT-015 - Content-Type deve ser JSON\", function () {\r\n    pm.expect(pm.response.headers.get(\"Content-Type\"))\r\n        .to.include(\"application/json\");\r\n});\r\n\r\npm.test(\"PRODUCT-015 - Resposta deve ser um objeto\", function () {\r\n    pm.expect(response).to.be.an(\"object\");\r\n    pm.expect(response).to.not.be.an(\"array\");\r\n});\r\n\r\npm.test(\"PRODUCT-015 - ID deve corresponder ao produto\", function () {\r\n    pm.expect(response.id).to.eql(\r\n        pm.environment.get(\"product_id\")\r\n    );\r\n});\r\n\r\npm.test(\"PRODUCT-015 - Preço alterado pelo PATCH deve estar persistido\", function () {\r\n    pm.expect(response.price).to.eql(35.5);\r\n});\r\n\r\npm.test(\"PRODUCT-015 - Nome anterior deve permanecer\", function () {\r\n    pm.expect(response.name).to.eql(\"QA Test Product Updated\");\r\n});\r\n\r\npm.test(\"PRODUCT-015 - Descrição anterior deve permanecer\", function () {\r\n    pm.expect(response.description).to.eql(\r\n        \"Product updated during API testing\"\r\n    );\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/products/{{product_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "products",
+                "{{product_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PRODUCT-016 — Search Product",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const response = pm.response.json();\r\n\r\npm.test(\"PRODUCT-016 - Status deve ser 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"PRODUCT-016 - Content-Type deve ser JSON\", function () {\r\n    pm.expect(pm.response.headers.get(\"Content-Type\"))\r\n        .to.include(\"application/json\");\r\n});\r\n\r\npm.test(\"PRODUCT-016 - Resposta deve ser um objeto\", function () {\r\n    pm.expect(response).to.be.an(\"object\");\r\n});\r\n\r\npm.test(\"PRODUCT-016 - Campo data deve existir\", function () {\r\n    pm.expect(response).to.have.property(\"data\");\r\n});\r\n\r\npm.test(\"PRODUCT-016 - Campo data deve ser array\", function () {\r\n    pm.expect(response.data).to.be.an(\"array\");\r\n});\r\n\r\npm.test(\"PRODUCT-016 - Campos de paginação devem existir\", function () {\r\n    pm.expect(response).to.have.property(\"current_page\");\r\n    pm.expect(response).to.have.property(\"last_page\");\r\n    pm.expect(response).to.have.property(\"total\");\r\n});\r\n\r\npm.test(\"PRODUCT-016 - Produto pesquisado deve aparecer no resultado\", function () {\r\n    const product = response.data.find(function (item) {\r\n        return item.id === pm.environment.get(\"product_id\");\r\n    });\r\n\r\n    pm.expect(product).to.not.be.undefined;\r\n});\r\n"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/products/search?q=QA%20Test%20Product%20Updated",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "products",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "QA%20Test%20Product%20Updated"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PRODUCT-017 - Search Product - No Results",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const response = pm.response.json();\r\n\r\npm.test(\"PRODUCT-017 - Status deve ser 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"PRODUCT-017 - Content-Type deve ser JSON\", function () {\r\n    pm.expect(pm.response.headers.get(\"Content-Type\"))\r\n        .to.include(\"application/json\");\r\n});\r\n\r\npm.test(\"PRODUCT-017 - Resposta deve ser um objeto\", function () {\r\n    pm.expect(response).to.be.an(\"object\");\r\n});\r\n\r\npm.test(\"PRODUCT-017 - Data deve ser um array\", function () {\r\n    pm.expect(response.data).to.be.an(\"array\");\r\n});\r\n\r\npm.test(\"PRODUCT-017 - Busca sem correspondência deve retornar lista vazia\", function () {\r\n    pm.expect(response.data).to.have.length(0);\r\n});\r\n\r\npm.test(\"PRODUCT-017 - Total deve ser zero\", function () {\r\n    pm.expect(response.total).to.eql(0);\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/products/search?q=ProdutoQueNaoExisteQA999",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "products",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "ProdutoQueNaoExisteQA999"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PRODUCT-018 - Search Product - Missing Query",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const response = pm.response.json();\r\n\r\npm.test(\"PRODUCT-018 - Status observado deve ser 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"PRODUCT-018 - Content-Type deve ser JSON\", function () {\r\n    pm.expect(pm.response.headers.get(\"Content-Type\"))\r\n        .to.include(\"application/json\");\r\n});\r\n\r\npm.test(\"PRODUCT-018 - Resposta deve ser um objeto\", function () {\r\n    pm.expect(response).to.be.an(\"object\");\r\n});\r\n\r\npm.test(\"PRODUCT-018 - Data deve ser um array\", function () {\r\n    pm.expect(response.data).to.be.an(\"array\");\r\n});\r\n\r\npm.test(\"PRODUCT-018 - API retorna lista vazia quando q não é informado\", function () {\r\n    pm.expect(response.data).to.have.length(0);\r\n});\r\n\r\npm.test(\"PRODUCT-018 - Total deve ser zero\", function () {\r\n    pm.expect(response.total).to.eql(0);\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/products/search",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "products",
+                "search"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PRODUCT-019 — Create Product - Invalid Data",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/products",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "products"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "04 - Cart",
+      "item": [
+        {
+          "name": "CART-001 - Create Cart",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const response = pm.response.json();\r\n\r\npm.test(\"CART-001 - Status deve ser 201\", function () {\r\n    pm.response.to.have.status(201);\r\n});\r\n\r\npm.test(\"CART-001 - Content-Type deve ser JSON\", function () {\r\n    pm.expect(pm.response.headers.get(\"Content-Type\"))\r\n        .to.include(\"application/json\");\r\n});\r\n\r\npm.test(\"CART-001 - Resposta deve ser um objeto\", function () {\r\n    pm.expect(response).to.be.an(\"object\");\r\n});\r\n\r\npm.test(\"CART-001 - ID do carrinho deve existir\", function () {\r\n    pm.expect(response).to.have.property(\"id\");\r\n    pm.expect(response.id).to.be.a(\"string\");\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/carts",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "carts"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "CART-002 - Add Product To Cart",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const response = pm.response.json();\r\n\r\npm.test(\"CART-002 - Status deve ser 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"CART-002 - Content-Type deve ser JSON\", function () {\r\n    pm.expect(pm.response.headers.get(\"Content-Type\"))\r\n        .to.include(\"application/json\");\r\n});\r\n\r\npm.test(\"CART-002 - Resposta deve ser um objeto\", function () {\r\n    pm.expect(response).to.be.an(\"object\");\r\n});\r\n\r\npm.test(\"CART-002 - Campo result deve existir\", function () {\r\n    pm.expect(response).to.have.property(\"result\");\r\n});\r\n\r\npm.test(\"CART-002 - result deve ser string\", function () {\r\n    pm.expect(response.result).to.be.a(\"string\");\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"product_id\": \"{{product_id}}\",\r\n    \"quantity\": 2\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/carts/{{cart_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "carts",
+                "{{cart_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "CART-003 - Get Cart",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const response = pm.response.json();\r\n\r\npm.test(\"CART-003 - Status deve ser 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"CART-003 - Content-Type deve ser JSON\", function () {\r\n    pm.expect(pm.response.headers.get(\"Content-Type\"))\r\n        .to.include(\"application/json\");\r\n});\r\n\r\npm.test(\"CART-003 - Resposta deve ser um objeto\", function () {\r\n    pm.expect(response).to.be.an(\"object\");\r\n});\r\n\r\npm.test(\"CART-003 - ID do carrinho deve existir\", function () {\r\n    pm.expect(response.id).to.eql(\r\n        pm.environment.get(\"cart_id\")\r\n    );\r\n});\r\n\r\npm.test(\"CART-003 - cart_items deve ser um array\", function () {\r\n    pm.expect(response.cart_items).to.be.an(\"array\");\r\n});\r\n\r\npm.test(\"CART-003 - Deve existir pelo menos um item\", function () {\r\n    pm.expect(response.cart_items.length).to.be.greaterThan(0);\r\n});\r\n\r\npm.test(\"CART-003 - Produto correto deve estar no carrinho\", function () {\r\n    pm.expect(response.cart_items[0].product_id).to.eql(\r\n        pm.environment.get(\"product_id\")\r\n    );\r\n});\r\n\r\npm.test(\"CART-003 - Quantidade deve ser 2\", function () {\r\n    pm.expect(response.cart_items[0].quantity).to.eql(2);\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/carts/{{cart_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "carts",
+                "{{cart_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "CART-004 - Update Product Quantity",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const response = pm.response.json();\r\n\r\npm.test(\"CART-004 - Status deve ser 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"CART-004 - Content-Type deve ser JSON\", function () {\r\n    pm.expect(pm.response.headers.get(\"Content-Type\"))\r\n        .to.include(\"application/json\");\r\n});\r\n\r\npm.test(\"CART-004 - Resposta deve ser um objeto\", function () {\r\n    pm.expect(response).to.be.an(\"object\");\r\n});\r\n\r\npm.test(\"CART-004 - Campo result deve existir\", function () {\r\n    pm.expect(response).to.have.property(\"result\");\r\n});\r\n\r\npm.test(\"CART-004 - result deve ser string\", function () {\r\n    pm.expect(response.result).to.be.a(\"string\");\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"product_id\": \"{{product_id}}\",\r\n    \"quantity\": 5\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/carts/{{cart_id}}/product/quantity",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "carts",
+                "{{cart_id}}",
+                "product",
+                "quantity"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "CART-005 - Verify Quantity Update",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const response = pm.response.json();\r\n\r\npm.test(\"CART-005 - Status deve ser 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"CART-005 - Carrinho deve ser um objeto\", function () {\r\n    pm.expect(response).to.be.an(\"object\");\r\n});\r\n\r\npm.test(\"CART-005 - ID deve corresponder ao carrinho criado\", function () {\r\n    pm.expect(response.id).to.eql(\r\n        pm.environment.get(\"cart_id\")\r\n    );\r\n});\r\n\r\npm.test(\"CART-005 - Deve existir cart_items\", function () {\r\n    pm.expect(response.cart_items).to.be.an(\"array\");\r\n});\r\n\r\npm.test(\"CART-005 - Quantidade atual deve ser 5\", function () {\r\n    pm.expect(response.cart_items[0].quantity).to.eql(5);\r\n});\r\n\r\npm.test(\"CART-005 - Produto deve continuar sendo o produto testado\", function () {\r\n    pm.expect(response.cart_items[0].product_id).to.eql(\r\n        pm.environment.get(\"product_id\")\r\n    );\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/carts/{{cart_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "carts",
+                "{{cart_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "CART-006 - Delete Product From Cart",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"CART-006 - Status deve ser 204\", function () {\r\n    pm.response.to.have.status(204);\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/carts/{{cart_id}}/product/{{product_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "carts",
+                "{{cart_id}}",
+                "product",
+                "{{product_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "CART-007 - Verify Product Removed",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const response = pm.response.json();\r\n\r\npm.test(\"CART-007 - Status deve ser 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"CART-007 - Resposta deve ser um objeto\", function () {\r\n    pm.expect(response).to.be.an(\"object\");\r\n});\r\n\r\npm.test(\"CART-007 - cart_items deve ser um array\", function () {\r\n    pm.expect(response.cart_items).to.be.an(\"array\");\r\n});\r\n\r\npm.test(\"CART-007 - Produto removido não deve estar no carrinho\", function () {\r\n    const product = response.cart_items.find(function (item) {\r\n        return item.product_id === pm.environment.get(\"product_id\");\r\n    });\r\n\r\n    pm.expect(product).to.be.undefined;\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/carts/{{cart_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "carts",
+                "{{cart_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "CART-008 - Delete Cart",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"CART-008 - Status deve ser 204\", function () {\r\n    pm.response.to.have.status(204);\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/carts/{{cart_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "carts",
+                "{{cart_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "CART-009 - Verify Cart Deleted",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const response = pm.response.json();\r\n\r\npm.test(\"CART-009 - Status deve ser 404\", function () {\r\n    pm.response.to.have.status(404);\r\n});\r\n\r\npm.test(\"CART-009 - Content-Type deve ser JSON\", function () {\r\n    pm.expect(pm.response.headers.get(\"Content-Type\"))\r\n        .to.include(\"application/json\");\r\n});\r\n\r\npm.test(\"CART-009 - Resposta deve ser um objeto\", function () {\r\n    pm.expect(response).to.be.an(\"object\");\r\n});\r\n\r\npm.test(\"CART-009 - Mensagem de recurso não encontrado deve existir\", function () {\r\n    pm.expect(response).to.have.property(\"message\");\r\n});\r\n\r\npm.test(\"CART-009 - Mensagem deve ser string\", function () {\r\n    pm.expect(response.message).to.be.a(\"string\");\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/carts/{{cart_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "carts",
+                "{{cart_id}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "05 - Integration",
+      "item": [
+        {
+          "name": "INTEGRATION-001 - Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const response = pm.response.json();\r\n\r\npm.test(\"INTEGRATION-001 - Status deve ser 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"INTEGRATION-001 - Access token deve existir\", function () {\r\n    pm.expect(response).to.have.property(\"access_token\");\r\n    pm.expect(response.access_token).to.be.a(\"string\");\r\n});\r\n\r\npm.environment.set(\"token\", response.access_token);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"email\": \"{{login_email}}\",\r\n    \"password\": \"{{login_password}}\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/users/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "INTEGRATION-002 - Get Products",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const response = pm.response.json();\r\n\r\npm.test(\"INTEGRATION-002 - Status deve ser 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"INTEGRATION-002 - Data deve ser array\", function () {\r\n    pm.expect(response.data).to.be.an(\"array\");\r\n});\r\n\r\npm.test(\"INTEGRATION-002 - Deve existir produto\", function () {\r\n    pm.expect(response.data.length).to.be.greaterThan(0);\r\n});\r\n\r\npm.test(\"INTEGRATION-002 - Produto deve possuir ID\", function () {\r\n    pm.expect(response.data[0].id).to.be.a(\"string\");\r\n});\r\n\r\npm.environment.set(\"product_id\", response.data[0].id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"name\": \"QA Test Product\",\r\n    \"description\": \"Product created for API testing\",\r\n    \"price\": 25.50,\r\n    \"category_id\": \"{{category_id}}\",\r\n    \"brand_id\": \"{{brand_id}}\",\r\n    \"product_image_id\": \"{{product_image_id}}\",\r\n    \"is_location_offer\": false,\r\n    \"is_rental\": false,\r\n    \"co2_rating\": \"A\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/products",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "products"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "INTEGRATION-003 - Create Cart",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const response = pm.response.json();\r\n\r\npm.test(\"INTEGRATION-003 - Status deve ser 201\", function () {\r\n    pm.response.to.have.status(201);\r\n});\r\n\r\npm.test(\"INTEGRATION-003 - Content-Type deve ser JSON\", function () {\r\n    pm.expect(pm.response.headers.get(\"Content-Type\"))\r\n        .to.include(\"application/json\");\r\n});\r\n\r\npm.test(\"INTEGRATION-003 - Resposta deve ser um objeto\", function () {\r\n    pm.expect(response).to.be.an(\"object\");\r\n    pm.expect(response).to.not.be.an(\"array\");\r\n});\r\n\r\npm.test(\"INTEGRATION-003 - ID do carrinho deve existir\", function () {\r\n    pm.expect(response).to.have.property(\"id\");\r\n    pm.expect(response.id).to.be.a(\"string\");\r\n});\r\n\r\npm.environment.set(\"cart_id\", response.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/carts",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "carts"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "INTEGRATION-004 - Add Product",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const response = pm.response.json();\r\n\r\npm.test(\"CART-002 - Status deve ser 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"CART-002 - Content-Type deve ser JSON\", function () {\r\n    pm.expect(pm.response.headers.get(\"Content-Type\"))\r\n        .to.include(\"application/json\");\r\n});\r\n\r\npm.test(\"CART-002 - Resposta deve ser um objeto\", function () {\r\n    pm.expect(response).to.be.an(\"object\");\r\n});\r\n\r\npm.test(\"CART-002 - Campo result deve existir\", function () {\r\n    pm.expect(response).to.have.property(\"result\");\r\n});\r\n\r\npm.test(\"CART-002 - result deve ser string\", function () {\r\n    pm.expect(response.result).to.be.a(\"string\");\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"product_id\": \"{{product_id}}\",\r\n    \"quantity\": 2\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/carts/{{cart_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "carts",
+                "{{cart_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "INTEGRATION-005 - Update Quantity",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const response = pm.response.json();\r\n\r\npm.test(\"CART-004 - Status deve ser 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"CART-004 - Content-Type deve ser JSON\", function () {\r\n    pm.expect(pm.response.headers.get(\"Content-Type\"))\r\n        .to.include(\"application/json\");\r\n});\r\n\r\npm.test(\"CART-004 - Resposta deve ser um objeto\", function () {\r\n    pm.expect(response).to.be.an(\"object\");\r\n});\r\n\r\npm.test(\"CART-004 - Campo result deve existir\", function () {\r\n    pm.expect(response).to.have.property(\"result\");\r\n});\r\n\r\npm.test(\"CART-004 - result deve ser string\", function () {\r\n    pm.expect(response.result).to.be.a(\"string\");\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"product_id\": \"{{product_id}}\",\r\n    \"quantity\": 5\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/carts/{{cart_id}}/product/quantity",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "carts",
+                "{{cart_id}}",
+                "product",
+                "quantity"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "INTEGRATION-006 - Verify Cart",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const response = pm.response.json();\r\n\r\npm.test(\"INTEGRATION-006 - Status deve ser 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"INTEGRATION-006 - Carrinho deve ser objeto\", function () {\r\n    pm.expect(response).to.be.an(\"object\");\r\n});\r\n\r\npm.test(\"INTEGRATION-006 - ID deve corresponder ao carrinho\", function () {\r\n    pm.expect(response.id).to.eql(\r\n        pm.environment.get(\"cart_id\")\r\n    );\r\n});\r\n\r\npm.test(\"INTEGRATION-006 - Deve existir cart_items\", function () {\r\n    pm.expect(response.cart_items).to.be.an(\"array\");\r\n});\r\n\r\npm.test(\"INTEGRATION-006 - Deve existir um item\", function () {\r\n    pm.expect(response.cart_items.length).to.be.greaterThan(0);\r\n});\r\n\r\npm.test(\"INTEGRATION-006 - Produto deve corresponder ao product_id\", function () {\r\n    pm.expect(response.cart_items[0].product_id).to.eql(\r\n        pm.environment.get(\"product_id\")\r\n    );\r\n});\r\n\r\npm.test(\"INTEGRATION-006 - Quantidade deve ser 5\", function () {\r\n    pm.expect(response.cart_items[0].quantity).to.eql(5);\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/carts/{{cart_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "carts",
+                "{{cart_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "INTEGRATION-007 - Delete Product",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"CART-006 - Status deve ser 204\", function () {\r\n    pm.response.to.have.status(204);\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/carts/{{cart_id}}/product/{{product_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "carts",
+                "{{cart_id}}",
+                "product",
+                "{{product_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "INTEGRATION-008 - Verify Product Removed",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const response = pm.response.json();\r\n\r\npm.test(\"CART-007 - Status deve ser 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"CART-007 - Resposta deve ser um objeto\", function () {\r\n    pm.expect(response).to.be.an(\"object\");\r\n});\r\n\r\npm.test(\"CART-007 - cart_items deve ser um array\", function () {\r\n    pm.expect(response.cart_items).to.be.an(\"array\");\r\n});\r\n\r\npm.test(\"CART-007 - Produto removido não deve estar no carrinho\", function () {\r\n    const product = response.cart_items.find(function (item) {\r\n        return item.product_id === pm.environment.get(\"product_id\");\r\n    });\r\n\r\n    pm.expect(product).to.be.undefined;\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/carts/{{cart_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "carts",
+                "{{cart_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "INTEGRATION-009 - Delete Cart",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"CART-008 - Status deve ser 204\", function () {\r\n    pm.response.to.have.status(204);\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/carts/{{cart_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "carts",
+                "{{cart_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "INTEGRATION-010 - Verify Cart Deleted",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const response = pm.response.json();\r\n\r\npm.test(\"CART-009 - Status deve ser 404\", function () {\r\n    pm.response.to.have.status(404);\r\n});\r\n\r\npm.test(\"CART-009 - Content-Type deve ser JSON\", function () {\r\n    pm.expect(pm.response.headers.get(\"Content-Type\"))\r\n        .to.include(\"application/json\");\r\n});\r\n\r\npm.test(\"CART-009 - Resposta deve ser um objeto\", function () {\r\n    pm.expect(response).to.be.an(\"object\");\r\n});\r\n\r\npm.test(\"CART-009 - Mensagem de recurso não encontrado deve existir\", function () {\r\n    pm.expect(response).to.have.property(\"message\");\r\n});\r\n\r\npm.test(\"CART-009 - Mensagem deve ser string\", function () {\r\n    pm.expect(response.message).to.be.a(\"string\");\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/carts/{{cart_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "carts",
+                "{{cart_id}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

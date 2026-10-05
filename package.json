@@ -4,8 +4,9 @@
   "description": "API testing portfolio project using Postman, JavaScript, Newman, GitHub and GitHub Actions.",
   "private": true,
   "scripts": {
-    "test:api": "newman run"
-  },
+  "test:api": "newman run postman/practice-software-testing.postman_collection.json -e postman/practice-software-testing.postman_environment.json --folder \"05 - Integration\"",
+  "test:api:ci": "newman run postman/practice-software-testing.postman_collection.json --folder \"05 - Integration\""
+},
   "keywords": [
     "qa",
     "quality-assurance",
@@ -15,5 +16,8 @@
     "software-testing"
   ],
   "author": "Vinicius",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "newman": "^6.2.2"
+  }
 }
